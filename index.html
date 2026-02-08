@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Be My Valentine ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    position: relative;
+  }
+
+  h1 {
+    margin-bottom: 30px;
+  }
+
+  .buttons {
+    position: relative;
+    height: 120px;
+  }
+
+  button {
+    padding: 14px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    position: absolute;
+    transition: transform 0.15s ease;
+  }
+
+  #yesBtn {
+    left: 40px;
+    background: #ff4d6d;
+    color: white;
+    animation: pulse 1.6s infinite;
+    box-shadow: 0 0 20px rgba(255,77,109,0.7);
+  }
+
+  #noBtn {
+    right: 40px;
+    background: #ccc;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 15px rgba(255,77,109,0.6); }
+    50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(255,77,109,0.9); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
+
+  #taunt {
+    position: absolute;
+    top: -30px;
+    right: 10px;
+    font-size: 14px;
+    color: #e60073;
+    font-weight: bold;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+
+  #taunt.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .result {
+    display: none;
+    animation: pop 0.6s ease forwards;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .result img {
+    width: 220px;
+    border-radius: 20px;
+    margin-top: 20px;
+  }
+
+  .forever {
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    animation: bounce 1s ease;
+  }
+
+  @keyframes bounce {
+    0% { transform: translateY(20px); opacity: 0; }
+    60% { transform: translateY(-10px); }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  /* Kiss shower */
+  .kiss {
+    position: fixed;
+    top: -60px;
+    font-size: 42px;
+    opacity: 0.9;
+    pointer-events: none;
+    animation: floatDown linear forwards;
+  }
+
+  @keyframes floatDown {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(115vh) translateX(60px) scale(1.1); opacity: 0; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+  <h1>Will you be my Valentine? ❤️</h1>
+
+  <div class="buttons">
+    <button id="yesBtn">Yes ❤️</button>
+    <button id="noBtn">No 🙃</button>
+    <span id="taunt">Nice try 😏</span>
+  </div>
+</div>
+
+<div class="card result" id="result">
+  <h1>YAYYYYY 💖💋</h1>
+  <img src="https://i.imgur.com/6XbQZ8M.png" alt="Love" />
+  <div class="forever">No refunds. You’re my Valentine forever 😎</div>
+</div>
+
+<audio id="music" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const card = document.getElementById('card');
+  const result = document.getElementById('result');
+  const taunt = document.getElementById('taunt');
+  const music = document.getElementById('music');
+
+  let escapeLevel = 0;
+
+  const MAX_WIDTH = 1250;
+  const MAX_HEIGHT = 900;
+  const PADDING = 20;
+
+  function escapeNoButton() {
+    taunt.classList.add('show');
+    setTimeout(() => taunt.classList.remove('show'), 600);
+
+    noBtn.style.animation = 'shake 0.2s';
+
+    setTimeout(() => {
+      const rect = noBtn.getBoundingClientRect();
+
+      const maxX = Math.min(220 + escapeLevel * 30, MAX_WIDTH / 2);
+      const maxY = Math.min(140 + escapeLevel * 20, MAX_HEIGHT / 2);
+
+      let x = (Math.random() * maxX * 2) - maxX;
+      let y = (Math.random() * maxY * 2) - maxY;
+
+      const nextLeft = rect.left + x;
+      const nextTop = rect.top + y;
+
+      if (nextLeft < PADDING) x += PADDING - nextLeft;
+      if (nextTop < PADDING) y += PADDING - nextTop;
+      if (nextLeft + rect.width > MAX_WIDTH - PADDING)
+        x -= (nextLeft + rect.width) - (MAX_WIDTH - PADDING);
+      if (nextTop + rect.height > MAX_HEIGHT - PADDING)
+        y -= (nextTop + rect.height) - (MAX_HEIGHT - PADDING);
+
+      noBtn.style.transform = `translate(${x}px, ${y}px)`;
+      noBtn.style.animation = '';
+
+      escapeLevel++;
+    }, 150);
+  }
+
+  noBtn.addEventListener('mouseenter', escapeNoButton);
+
+  yesBtn.addEventListener('click', () => {
+    card.style.display = 'none';
+    result.style.display = 'block';
+    music.play();
+    startKissShower();
+  });
+
+  function startKissShower() {
+    const kisses = ['💋', '😘', '💖'];
+
+    setInterval(() => {
+      const kiss = document.createElement('div');
+      kiss.className = 'kiss';
+      kiss.innerText = kisses[Math.floor(Math.random() * kisses.length)];
+      kiss.style.left = Math.random() * 100 + 'vw';
+
+      const duration = Math.random() * 3 + 5;
+      kiss.style.animationDuration = duration + 's';
+
+      document.body.appendChild(kiss);
+      setTimeout(() => kiss.remove(), duration * 1000);
+    }, 420);
+  }
+</script>
+
+</body>
+</html>
