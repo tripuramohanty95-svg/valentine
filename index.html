@@ -24,7 +24,7 @@
     text-align: center;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     position: relative;
-    width: 360px;
+    width: 420px;
   }
 
   h1 {
@@ -32,18 +32,16 @@
     font-size: 22px;
   }
 
-  /* ✅ FIXED BUTTON CONTAINER */
+  /* BUTTON WRAPPER */
   .buttons {
     position: relative;
     height: 120px;
-    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 30px;
   }
 
-  /* ✅ FIXED BUTTON BASE */
   button {
     padding: 14px 30px;
     font-size: 18px;
@@ -66,30 +64,33 @@
   }
 
   @keyframes pulse {
-    0% { transform: scale(1); box-shadow: 0 0 15px rgba(255,77,109,0.6); }
-    50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(255,77,109,0.9); }
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
     100% { transform: scale(1); }
   }
 
   @keyframes shake {
     0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-4px); }
     100% { transform: translateX(0); }
   }
 
-  /* Taunt */
+  /* TAUNT */
   #taunt {
-    position: absolute;
+    position: fixed;
     font-size: 14px;
-    color: #e60073;
-    font-weight: bold;
+    background: white;
+    color: #ff4d6d;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
     opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.25s ease, transform 0.25s ease;
     pointer-events: none;
-    top: -35px;
+    transform: scale(0.8);
+    transition: all 0.25s ease;
+    z-index: 1000;
   }
 
   #taunt.show {
@@ -97,7 +98,7 @@
     transform: scale(1);
   }
 
-  /* Result Card */
+  /* RESULT */
   .result {
     display: none;
     animation: pop 0.6s ease forwards;
@@ -127,20 +128,19 @@
     100% { transform: translateY(0); opacity: 1; }
   }
 
-  /* Rose petals / kisses */
-  .kiss {
+  /* ROSE PETALS */
+  .petal {
     position: fixed;
-    top: -60px;
-    font-size: 26px;
-    opacity: 0.9;
+    top: -50px;
+    font-size: 22px;
     pointer-events: none;
-    animation: floatDown linear forwards;
+    animation: fall linear forwards;
   }
 
-  @keyframes floatDown {
-    0% { transform: translateY(0) translateX(0); opacity: 0; }
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
     10% { opacity: 1; }
-    100% { transform: translateY(115vh) translateX(40px); opacity: 0; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
   }
 </style>
 </head>
@@ -153,15 +153,16 @@
   <div class="buttons">
     <button id="yesBtn">Yes ❤️</button>
     <button id="noBtn">No 🙃</button>
-    <span id="taunt">Nice try 😏</span>
   </div>
 </div>
 
 <div class="card result" id="result">
-  <h1>Decision Locked 🔒💖</h1>
-  <img src="boboAndMe.png" alt="Love" />
+  <h1>Finally 😌💖</h1>
+  <img src="boboAndMe.png" alt="Love">
   <div class="forever">No refunds. You’re my Valentine forever 😎</div>
 </div>
+
+<div id="taunt">Nice try 😏</div>
 
 <audio id="music" loop>
   <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
@@ -175,33 +176,40 @@
   const taunt = document.getElementById('taunt');
   const music = document.getElementById('music');
 
-  let escapeLevel = 0;
-
-  const MAX_WIDTH = 1250;
-  const MAX_HEIGHT = 900;
+  const MAX_WIDTH = 1300;
+  const MAX_HEIGHT = 700;
   const PADDING = 20;
 
-  function escapeNoButton() {
-    taunt.classList.add('show');
-    setTimeout(() => taunt.classList.remove('show'), 600);
+  let offsetX = 0;
+  let offsetY = 0;
 
+  function moveNoButton() {
+    const rect = noBtn.getBoundingClientRect();
+
+    const dx = (Math.random() - 0.5) * 300;
+    const dy = (Math.random() - 0.5) * 200;
+
+    offsetX += dx;
+    offsetY += dy;
+
+    offsetX = Math.max(-MAX_WIDTH/2, Math.min(MAX_WIDTH/2, offsetX));
+    offsetY = Math.max(-MAX_HEIGHT/2, Math.min(MAX_HEIGHT/2, offsetY));
+
+    noBtn.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
     noBtn.style.animation = 'shake 0.2s';
 
-    setTimeout(() => {
-      const maxX = Math.min(160 + escapeLevel * 25, MAX_WIDTH / 2);
-      const maxY = Math.min(100 + escapeLevel * 20, MAX_HEIGHT / 2);
+    // Position taunt near No button
+    const newRect = noBtn.getBoundingClientRect();
+    taunt.style.left = newRect.left + newRect.width / 2 + 'px';
+    taunt.style.top = newRect.top - 35 + 'px';
 
-      const x = (Math.random() * maxX * 2) - maxX;
-      const y = (Math.random() * maxY * 2) - maxY;
+    taunt.classList.add('show');
+    setTimeout(() => taunt.classList.remove('show'), 900);
 
-      noBtn.style.transform = `translate(${x}px, ${y}px)`;
-      noBtn.style.animation = '';
-
-      escapeLevel++;
-    }, 150);
+    setTimeout(() => noBtn.style.animation = '', 200);
   }
 
-  noBtn.addEventListener('mouseenter', escapeNoButton);
+  noBtn.addEventListener('mouseenter', moveNoButton);
 
   yesBtn.addEventListener('click', () => {
     card.style.display = 'none';
@@ -211,17 +219,14 @@
   });
 
   function startPetals() {
-    const petals = ['🌹'];
-
     setInterval(() => {
       const petal = document.createElement('div');
-      petal.className = 'kiss';
-      petal.innerText = petals[0];
+      petal.className = 'petal';
+      petal.innerText = '🌹';
       petal.style.left = Math.random() * 100 + 'vw';
-      petal.style.animationDuration = (Math.random() * 3 + 5) + 's';
-
+      petal.style.animationDuration = (Math.random() * 3 + 6) + 's';
       document.body.appendChild(petal);
-      setTimeout(() => petal.remove(), 8000);
+      setTimeout(() => petal.remove(), 9000);
     }, 500);
   }
 </script>
