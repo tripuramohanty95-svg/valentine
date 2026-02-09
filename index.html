@@ -24,6 +24,7 @@
     text-align: center;
     box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     position: relative;
+    width: 360px;
   }
 
   h1 {
@@ -31,23 +32,29 @@
     font-size: 22px;
   }
 
+  /* ✅ FIXED BUTTON CONTAINER */
   .buttons {
     position: relative;
     height: 120px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
   }
 
+  /* ✅ FIXED BUTTON BASE */
   button {
     padding: 14px 30px;
     font-size: 18px;
     border: none;
     border-radius: 30px;
     cursor: pointer;
-    position: absolute;
+    position: relative;
     transition: transform 0.15s ease;
   }
 
   #yesBtn {
-    left: 40px;
     background: #ff4d6d;
     color: white;
     animation: pulse 1.6s infinite;
@@ -55,7 +62,6 @@
   }
 
   #noBtn {
-    right: 40px;
     background: #ccc;
   }
 
@@ -73,6 +79,7 @@
     100% { transform: translateX(0); }
   }
 
+  /* Taunt */
   #taunt {
     position: absolute;
     font-size: 14px;
@@ -82,7 +89,7 @@
     transform: scale(0.8);
     transition: opacity 0.25s ease, transform 0.25s ease;
     pointer-events: none;
-    padding: 16px 24px;
+    top: -35px;
   }
 
   #taunt.show {
@@ -90,6 +97,7 @@
     transform: scale(1);
   }
 
+  /* Result Card */
   .result {
     display: none;
     animation: pop 0.6s ease forwards;
@@ -119,20 +127,20 @@
     100% { transform: translateY(0); opacity: 1; }
   }
 
-  /* Kiss shower */
+  /* Rose petals / kisses */
   .kiss {
     position: fixed;
     top: -60px;
-    font-size: 32px;
+    font-size: 26px;
     opacity: 0.9;
     pointer-events: none;
     animation: floatDown linear forwards;
   }
 
   @keyframes floatDown {
-    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
     10% { opacity: 1; }
-    100% { transform: translateY(115vh) translateX(60px) scale(1.1); opacity: 0; }
+    100% { transform: translateY(115vh) translateX(40px); opacity: 0; }
   }
 </style>
 </head>
@@ -150,7 +158,7 @@
 </div>
 
 <div class="card result" id="result">
-  <h1>YAYYYYY💖<br>Decision Locked 🔒💘</br></h1>
+  <h1>Decision Locked 🔒💖</h1>
   <img src="boboAndMe.png" alt="Love" />
   <div class="forever">No refunds. You’re my Valentine forever 😎</div>
 </div>
@@ -180,23 +188,11 @@
     noBtn.style.animation = 'shake 0.2s';
 
     setTimeout(() => {
-      const rect = noBtn.getBoundingClientRect();
+      const maxX = Math.min(160 + escapeLevel * 25, MAX_WIDTH / 2);
+      const maxY = Math.min(100 + escapeLevel * 20, MAX_HEIGHT / 2);
 
-      const maxX = Math.min(220 + escapeLevel * 30, MAX_WIDTH / 2);
-      const maxY = Math.min(140 + escapeLevel * 20, MAX_HEIGHT / 2);
-
-      let x = (Math.random() * maxX * 2) - maxX;
-      let y = (Math.random() * maxY * 2) - maxY;
-
-      const nextLeft = rect.left + x;
-      const nextTop = rect.top + y;
-
-      if (nextLeft < PADDING) x += PADDING - nextLeft;
-      if (nextTop < PADDING) y += PADDING - nextTop;
-      if (nextLeft + rect.width > MAX_WIDTH - PADDING)
-        x -= (nextLeft + rect.width) - (MAX_WIDTH - PADDING);
-      if (nextTop + rect.height > MAX_HEIGHT - PADDING)
-        y -= (nextTop + rect.height) - (MAX_HEIGHT - PADDING);
+      const x = (Math.random() * maxX * 2) - maxX;
+      const y = (Math.random() * maxY * 2) - maxY;
 
       noBtn.style.transform = `translate(${x}px, ${y}px)`;
       noBtn.style.animation = '';
@@ -211,32 +207,24 @@
     card.style.display = 'none';
     result.style.display = 'block';
     music.play();
-    startKissShower();
+    startPetals();
   });
 
-  function startKissShower() {
-    const kisses = ['😘', '💖'];
+  function startPetals() {
+    const petals = ['🌹'];
 
     setInterval(() => {
-      const kiss = document.createElement('div');
-      kiss.className = 'kiss';
-      kiss.innerText = kisses[Math.floor(Math.random() * kisses.length)];
-      kiss.style.left = Math.random() * 100 + 'vw';
+      const petal = document.createElement('div');
+      petal.className = 'kiss';
+      petal.innerText = petals[0];
+      petal.style.left = Math.random() * 100 + 'vw';
+      petal.style.animationDuration = (Math.random() * 3 + 5) + 's';
 
-      const duration = Math.random() * 3 + 5;
-      kiss.style.animationDuration = duration + 's';
-
-      document.body.appendChild(kiss);
-      setTimeout(() => kiss.remove(), duration * 1000);
-    }, 420);
+      document.body.appendChild(petal);
+      setTimeout(() => petal.remove(), 8000);
+    }, 500);
   }
 </script>
 
 </body>
 </html>
-
-
-
-
-
-
