@@ -43,7 +43,7 @@
   }
 
   button {
-    padding: 14px 30px;
+    padding: 12px 26px;
     font-size: 18px;
     border: none;
     border-radius: 30px;
@@ -159,7 +159,7 @@
 <div class="card result" id="result">
   <h1>Some choices change everything. Choosing you was the best one.❤️</h1>
   <img src="boboAndMe.png" alt="Love">
-  <div class="forever">No refunds. You’re my Valentine forever 😎</div>
+  <div class="forever">No refunds. <br>You’re my Valentine forever 😎</br></div>
 </div>
 
 <div id="taunt">Nice try 😏</div>
@@ -222,7 +222,7 @@
     setInterval(() => {
       const petal = document.createElement('div');
       petal.className = 'petal';
-      petal.innerText = '🌹';
+      petal.innerText = '❤️';
       petal.style.left = Math.random() * 100 + 'vw';
       petal.style.animationDuration = (Math.random() * 3 + 6) + 's';
       document.body.appendChild(petal);
@@ -233,5 +233,6 @@
 
 </body>
 </html>
+
 
 
